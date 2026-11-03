@@ -19,6 +19,7 @@ __pycache__/
 # IDE / Editor
 .vscode/
 .idea/
+.zed/
 
 # Secrets and local environment
 .env
@@ -34,3 +35,9 @@ dump/*
 
 # Logs
 *.log
+
+# Milestone screen-mockup artifacts (kept outside the repository)
+docs/screenshots/
+docs/tabel-screen-mockup.md
+docs/Tabel-Screen-Mockup-Pilar.docx
+docs/screen-mockup-data.json
