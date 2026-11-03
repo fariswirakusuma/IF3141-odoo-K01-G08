@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="paperformat_pilar_po" model="report.paperformat">
+            <field name="name">Pilar PO A4</field>
+            <field name="default" eval="False"/>
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">25</field>
+            <field name="margin_bottom">20</field>
+            <field name="margin_left">15</field>
+            <field name="margin_right">15</field>
+            <field name="header_spacing">18</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <template id="report_po_overdue_document">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h1>Ringkasan PO Tertunda</h1>
+                        <p class="text-muted">
+                            Rekapitulasi Purchase Order yang belum terselesaikan setelah
+                            melewati batas waktu. Dokumen ini ditujukan bagi Executive Director.
+                        </p>
+                        <t t-set="overdue_docs" t-value="docs.filtered('is_overdue')"/>
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Nomor PO</th>
+                                    <th>Pelanggan</th>
+                                    <th>Tahap</th>
+                                    <th>Tanggal Kirim</th>
+                                    <th>Batas Waktu</th>
+                                    <th class="text-right">Keterlambatan (jam)</th>
+                                    <th>Penanggung Jawab</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="overdue_docs" t-as="o">
+                                    <td><span t-field="o.name"/></td>
+                                    <td><span t-field="o.customer_id"/></td>
+                                    <td><span t-field="o.state"/></td>
+                                    <td><span t-esc="o.delivery_date.strftime('%d/%m/%Y') if o.delivery_date else ''"/></td>
+                                    <td><span t-esc="o.stage_deadline.strftime('%d/%m/%Y %H:%M') if o.stage_deadline else ''"/></td>
+                                    <td class="text-right">
+                                        <span t-field="o.hours_late"
+                                              t-options='{"widget": "float", "precision": 1}'/>
+                                    </td>
+                                    <td>
+                                        <span t-if="o.state in ('menunggu_keputusan', 'ditunda')">Director of Operational</span>
+                                        <span t-else="">Staff Sales</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="mt-4">
+                            Total PO tertunda:
+                            <strong><span t-esc="len(overdue_docs)"/></strong>
+                        </p>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <template id="report_po_approved_document">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h1>Salinan PO Sah</h1>
+                        <p class="text-muted">
+                            Salinan read-only PO berstatus Disahkan sebagai dasar persiapan
+                            operasional, pengadaan, tagihan, dan pengiriman.
+                        </p>
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Nomor PO</th>
+                                    <th>Pelanggan</th>
+                                    <th>Segmen</th>
+                                    <th>Tanggal Kirim</th>
+                                    <th>Alamat</th>
+                                    <th>Disahkan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="docs" t-as="o" t-if="o.state == 'disahkan'">
+                                    <td><span t-field="o.name"/></td>
+                                    <td><span t-field="o.customer_id"/></td>
+                                    <td><span t-field="o.customer_segment"/></td>
+                                    <td><span t-esc="o.delivery_date.strftime('%d/%m/%Y') if o.delivery_date else ''"/></td>
+                                    <td><span t-field="o.delivery_address"/></td>
+                                    <td><span t-esc="o.decision_at.strftime('%d/%m/%Y %H:%M') if o.decision_at else ''"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <record id="action_report_po_overdue" model="ir.actions.report">
+            <field name="name">Ringkasan PO Tertunda</field>
+            <field name="model">pilar.po</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pilar_po.report_po_overdue_document</field>
+            <field name="report_file">pilar_po.report_po_overdue_document</field>
+            <field name="binding_model_id" ref="model_pilar_po"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="paperformat_pilar_po"/>
+            <field name="print_report_name">'Ringkasan PO Tertunda'</field>
+        </record>
+
+        <record id="action_report_po_approved" model="ir.actions.report">
+            <field name="name">Salinan PO Sah</field>
+            <field name="model">pilar.po</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pilar_po.report_po_approved_document</field>
+            <field name="report_file">pilar_po.report_po_approved_document</field>
+            <field name="binding_model_id" ref="model_pilar_po"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="paperformat_pilar_po"/>
+            <field name="print_report_name">'Salinan PO Sah'</field>
+        </record>
+
+    </data>
+</odoo>

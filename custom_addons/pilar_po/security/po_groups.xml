@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="group_po_sales" model="res.groups">
+            <field name="name">PO / Staff Sales</field>
+            <field name="category_id" ref="base.module_category_operations"/>
+        </record>
+        <record id="group_po_director" model="res.groups">
+            <field name="name">PO / Director of Operational</field>
+            <field name="category_id" ref="base.module_category_operations"/>
+        </record>
+        <record id="group_po_operations" model="res.groups">
+            <field name="name">PO / Head of Operational</field>
+            <field name="category_id" ref="base.module_category_operations"/>
+        </record>
+        <record id="group_po_purchasing" model="res.groups">
+            <field name="name">PO / Purchasing</field>
+            <field name="category_id" ref="base.module_category_operations"/>
+        </record>
+        <record id="group_po_finance" model="res.groups">
+            <field name="name">PO / Director of Finance</field>
+            <field name="category_id" ref="base.module_category_operations"/>
+        </record>
+        <record id="group_po_driver" model="res.groups">
+            <field name="name">PO / Head of Driver</field>
+            <field name="category_id" ref="base.module_category_operations"/>
+        </record>
+        <record id="group_po_executive" model="res.groups">
+            <field name="name">PO / Executive Director</field>
+            <field name="category_id" ref="base.module_category_operations"/>
+        </record>
+        <record id="group_po_manager" model="res.groups">
+            <field name="name">PO / Administrator Modul</field>
+            <field name="category_id" ref="base.module_category_operations"/>
+            <field name="implied_ids" eval="[(4, ref('group_po_sales')), (4, ref('group_po_director'))]"/>
+        </record>
+    </data>
+</odoo>

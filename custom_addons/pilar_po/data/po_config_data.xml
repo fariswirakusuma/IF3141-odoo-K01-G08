@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="pilar_po_config_default" model="pilar.po.config">
+            <field name="name">Konfigurasi Validasi &amp; Persetujuan PO</field>
+            <field name="updated_by" ref="base.user_admin"/>
+            <field name="config_version">1.0</field>
+            <field name="inspection_sla_duration">8</field>
+            <field name="sla_duration">24</field>
+            <field name="reminder_threshold">75</field>
+            <field name="reminder_channel">telegram</field>
+            <field name="effective_from">2026-01-01</field>
+            <field name="required_fields">Pelanggan, alamat pengiriman, tanggal pengiriman, minimal satu baris komoditas, kuantitas &gt; 0, satuan, dan spesifikasi mutu.</field>
+            <field name="validation_rules">PO dinyatakan lolos bila seluruh isian wajib terisi, kuantitas lebih dari nol, tanggal pengiriman belum lewat, dan tidak ada PO ganda untuk pelanggan dan tanggal yang sama.</field>
+        </record>
+        <record id="seq_pilar_po" model="ir.sequence">
+            <field name="name">Nomor Purchase Order</field>
+            <field name="code">pilar.po</field>
+            <field name="prefix">PO/%(year)s/%(month)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <menuitem id="menu_pilar_po_root" name="PO Center" sequence="10"
+                  web_icon="pilar_po,static/description/icon.png"/>
+
+        <menuitem id="menu_pilar_po_dashboard" name="Dashboard PO"
+                  parent="menu_pilar_po_root" sequence="1"
+                  action="action_pilar_po_dashboard"/>
+
+        <menuitem id="menu_pilar_po_sales" name="Staff Sales"
+                  parent="menu_pilar_po_root" sequence="10"/>
+        <menuitem id="menu_pilar_po_queue" name="Antrean PO"
+                  parent="menu_pilar_po_sales" sequence="1"
+                  action="action_pilar_po_queue"/>
+        <menuitem id="menu_pilar_po_returned" name="PO Dikembalikan"
+                  parent="menu_pilar_po_sales" sequence="2"
+                  action="action_pilar_po_returned"/>
+
+        <menuitem id="menu_pilar_po_director" name="Director of Operational"
+                  parent="menu_pilar_po_root" sequence="20"/>
+        <menuitem id="menu_pilar_po_approval" name="Persetujuan PO"
+                  parent="menu_pilar_po_director" sequence="1"
+                  action="action_pilar_po_approval"/>
+        <menuitem id="menu_pilar_po_overdue" name="Ringkasan PO Tertunda"
+                  parent="menu_pilar_po_director" sequence="2"
+                  action="action_pilar_po_overdue"/>
+
+        <menuitem id="menu_pilar_po_operations" name="Operasional &amp; Pengiriman"
+                  parent="menu_pilar_po_root" sequence="30"/>
+        <menuitem id="menu_pilar_po_approved" name="PO Disahkan"
+                  parent="menu_pilar_po_operations" sequence="1"
+                  action="action_pilar_po_approved"/>
+        <menuitem id="menu_pilar_po_driver" name="Jadwal Pengiriman"
+                  parent="menu_pilar_po_operations" sequence="2"
+                  action="action_pilar_po_driver"/>
+
+        <menuitem id="menu_pilar_po_purchasing" name="Purchasing"
+                  parent="menu_pilar_po_root" sequence="40"/>
+        <menuitem id="menu_pilar_po_needs" name="Kebutuhan Barang"
+                  parent="menu_pilar_po_purchasing" sequence="1"
+                  action="action_pilar_po_purchasing"/>
+
+        <menuitem id="menu_pilar_po_finance" name="Keuangan"
+                  parent="menu_pilar_po_root" sequence="50"/>
+        <menuitem id="menu_pilar_po_billing" name="Dasar Tagihan"
+                  parent="menu_pilar_po_finance" sequence="1"
+                  action="action_pilar_po_finance"/>
+
+        <menuitem id="menu_pilar_po_archive" name="Arsip &amp; Audit"
+                  parent="menu_pilar_po_root" sequence="60"/>
+        <menuitem id="menu_pilar_po_cancelled" name="PO Dibatalkan"
+                  parent="menu_pilar_po_archive" sequence="1"
+                  action="action_pilar_po_cancelled"/>
+        <menuitem id="menu_pilar_po_history" name="Riwayat &amp; Audit"
+                  parent="menu_pilar_po_archive" sequence="2"
+                  action="action_pilar_po_history"/>
+
+        <menuitem id="menu_pilar_po_settings" name="Pengaturan"
+                  parent="menu_pilar_po_root" sequence="90"/>
+        <menuitem id="menu_pilar_po_config" name="Validasi &amp; Persetujuan"
+                  parent="menu_pilar_po_settings" sequence="1"
+                  action="action_pilar_po_config"/>
+        <menuitem id="menu_pilar_customer" name="Pelanggan PO"
+                  parent="menu_pilar_po_settings" sequence="2"
+                  action="action_pilar_customer"/>
+
+    </data>
+</odoo>

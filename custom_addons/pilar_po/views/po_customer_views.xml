@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_pilar_customer_list" model="ir.ui.view">
+            <field name="name">pilar.customer.list</field>
+            <field name="model">pilar.customer</field>
+            <field name="arch" type="xml">
+                <tree string="Pelanggan PO">
+                    <field name="customer_name"/>
+                    <field name="customer_type"/>
+                    <field name="contact_name"/>
+                    <field name="contact_phone"/>
+                    <field name="telegram_chat_id"/>
+                    <field name="is_active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_pilar_customer_form" model="ir.ui.view">
+            <field name="name">pilar.customer.form</field>
+            <field name="model">pilar.customer</field>
+            <field name="arch" type="xml">
+                <form string="Pelanggan PO">
+                    <sheet>
+                        <group>
+                            <group string="Identitas Pelanggan">
+                                <field name="customer_name"/>
+                                <field name="customer_type"/>
+                                <field name="is_active"/>
+                            </group>
+                            <group string="Kanal &amp; Kontak">
+                                <field name="telegram_chat_id"/>
+                                <field name="contact_name"/>
+                                <field name="contact_phone"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_pilar_customer" model="ir.actions.act_window">
+            <field name="name">Pelanggan PO</field>
+            <field name="res_model">pilar.customer</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

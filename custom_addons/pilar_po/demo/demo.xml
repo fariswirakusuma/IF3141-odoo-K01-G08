@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Data contoh hanya dimuat pada database dengan data demo. -->
+    <record id="demo_customer_berkah" model="pilar.customer">
+        <field name="customer_name">Toko Berkah Jaya</field>
+        <field name="customer_type">mbg</field>
+        <field name="telegram_chat_id">1001001001</field>
+        <field name="contact_name">Admin Berkah</field>
+        <field name="contact_phone">0812-1111-2201</field>
+    </record>
+
+    <record id="demo_customer_sumber" model="pilar.customer">
+        <field name="customer_name">CV Sumber Makmur</field>
+        <field name="customer_type">horeca</field>
+        <field name="telegram_chat_id">1001001002</field>
+        <field name="contact_name">Admin Sumber</field>
+        <field name="contact_phone">0812-1111-2202</field>
+    </record>
+
+    <record id="demo_po_berkah" model="pilar.po">
+        <field name="customer_id" ref="demo_customer_berkah"/>
+        <field name="delivery_date">2026-11-10</field>
+        <field name="delivery_address">Jl. Cihampelas No. 88, Bandung</field>
+        <field name="telegram_sender">Admin Berkah</field>
+        <field name="notes">Pesanan rutin dapur SPPG MBG.</field>
+    </record>
+
+    <record id="demo_po_item_beras" model="pilar.po.item">
+        <field name="po_id" ref="demo_po_berkah"/>
+        <field name="commodity_name">Beras Premium</field>
+        <field name="quantity">60</field>
+        <field name="unit_name">kg</field>
+        <field name="quality_specification">Beras premium, kemasan 25 kg</field>
+    </record>
+
+    <record id="demo_po_item_minyak" model="pilar.po.item">
+        <field name="po_id" ref="demo_po_berkah"/>
+        <field name="commodity_name">Minyak Goreng</field>
+        <field name="quantity">24</field>
+        <field name="unit_name">liter</field>
+        <field name="quality_specification">Minyak goreng kemasan jerigen</field>
+    </record>
+
+    <record id="demo_po_sumber" model="pilar.po">
+        <field name="customer_id" ref="demo_customer_sumber"/>
+        <field name="delivery_date">2026-11-12</field>
+        <field name="delivery_address">Jl. Gatot Subroto No. 21, Cimahi</field>
+        <field name="telegram_sender">Admin Sumber</field>
+        <field name="state">dalam_pemeriksaan</field>
+    </record>
+
+    <record id="demo_po_item_daging" model="pilar.po.item">
+        <field name="po_id" ref="demo_po_sumber"/>
+        <field name="commodity_name">Daging Ayam</field>
+        <field name="quantity">40</field>
+        <field name="unit_name">kg</field>
+        <field name="quality_specification">Daging ayam segar, suhu dingin</field>
+    </record>
+
+    <record id="demo_po_item_sayur" model="pilar.po.item">
+        <field name="po_id" ref="demo_po_sumber"/>
+        <field name="commodity_name">Sayur Segar Paket</field>
+        <field name="quantity">25</field>
+        <field name="unit_name">paket</field>
+        <field name="quality_specification">Paket sayur harian untuk horeca</field>
+    </record>
+</odoo>

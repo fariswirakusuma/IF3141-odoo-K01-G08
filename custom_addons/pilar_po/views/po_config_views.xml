@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_pilar_po_config_list" model="ir.ui.view">
+            <field name="name">pilar.po.config.list</field>
+            <field name="model">pilar.po.config</field>
+            <field name="arch" type="xml">
+                <tree string="Konfigurasi PO">
+                    <field name="name"/>
+                    <field name="config_version"/>
+                    <field name="inspection_sla_duration"/>
+                    <field name="sla_duration"/>
+                    <field name="reminder_threshold"/>
+                    <field name="reminder_channel"/>
+                    <field name="effective_from"/>
+                    <field name="effective_until"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_pilar_po_config_form" model="ir.ui.view">
+            <field name="name">pilar.po.config.form</field>
+            <field name="model">pilar.po.config</field>
+            <field name="arch" type="xml">
+                <form string="Konfigurasi Validasi &amp; Persetujuan PO">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name"/></h1>
+                        </div>
+                        <group>
+                            <group string="Identitas Konfigurasi">
+                                <field name="config_version"/>
+                                <field name="updated_by"/>
+                                <field name="created_at"/>
+                                <field name="active"/>
+                            </group>
+                            <group string="Masa Berlaku">
+                                <field name="effective_from"/>
+                                <field name="effective_until"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Batas Waktu">
+                                <field name="inspection_sla_duration"/>
+                                <field name="sla_duration"/>
+                                <field name="reminder_threshold"/>
+                            </group>
+                            <group string="Pengingat &amp; Eskalasi">
+                                <field name="reminder_channel"/>
+                                <field name="escalation_target"/>
+                            </group>
+                        </group>
+                        <separator string="Isian Wajib PO"/>
+                        <field name="required_fields" nolabel="1"/>
+                        <separator string="Aturan Validasi"/>
+                        <field name="validation_rules" nolabel="1"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_pilar_po_config" model="ir.actions.act_window">
+            <field name="name">Pengaturan Validasi &amp; Persetujuan PO</field>
+            <field name="res_model">pilar.po.config</field>
+            <field name="view_mode">form,tree</field>
+        </record>
+
+    </data>
+</odoo>
