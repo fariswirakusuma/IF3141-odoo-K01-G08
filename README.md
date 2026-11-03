@@ -61,6 +61,33 @@ Catatan:
 
 Contoh modul (domain kucing) berisi model dengan chatter, state machine dengan guard, constraint, group + ACL + record rule, view `<tree>`/form/search, data awal (`noupdate`), data demo, dan test. Pasang dengan perintah **Install modul** di atas; bila modul belum muncul di **Apps**, pilih **Update Apps List**.
 
+## Modul Milestone 4: `pilar_po`
+
+Modul validasi dan persetujuan Purchase Order PT Pilar Agrosinergi Nusantara
+(proses PB-03, FR-01 s.d. FR-15). Modul mencakup PO terstruktur, pemeriksaan
+kelengkapan otomatis, pengembalian/perbaikan, persetujuan berbatas waktu,
+pengingat/eskalasi, ringkasan PO tertunda, PO sah untuk Operasional/Purchasing/
+Keuangan/Driver, pembatalan, dan jejak audit. Detail model, status, peran, dan
+struktur ada di [`custom_addons/pilar_po/README.md`](custom_addons/pilar_po/README.md).
+
+```bash
+# Install / upgrade
+docker compose run --rm web odoo -d odoo_app -i pilar_po --stop-after-init
+docker compose run --rm web odoo -d odoo_app -u pilar_po --stop-after-init
+
+# Test
+docker compose run --rm web odoo -d odoo_test -i pilar_po --test-enable \
+  --test-tags /pilar_po --stop-after-init --without-demo=all
+
+# Data demo (setelah web berjalan)
+python3 scripts/seed_demo.py --db odoo_app
+```
+
+Database tanpa data demo akan menampilkan layar kosong. Untuk presentasi,
+jalankan `scripts/seed_demo.py` agar seluruh layar (dasbor, antrean, persetujuan,
+PO tertunda, PO sah, dan pengiriman) berisi data. Tabel screen mockup dan
+tangkapan layar disimpan di luar repository ini sebagai lampiran dokumen milestone.
+
 ## IDE dan lint
 
 Salin source Odoo agar editor bisa autocomplete (hanya file yang dibutuhkan, ±70 MB; folder di-ignore git):
