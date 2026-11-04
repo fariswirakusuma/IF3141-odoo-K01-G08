@@ -154,7 +154,7 @@
                                 type="object"
                                 invisible="state not in ['menunggu_keputusan', 'ditunda']"/>
                         <button name="action_return" string="Kembalikan untuk Perbaikan"
-                                type="object"
+                                type="object" groups="pilar_po.group_po_sales"
                                 invisible="state not in ['bukti_diterima', 'dalam_pemeriksaan', 'menunggu_keputusan']"/>
                         <button name="action_resubmit" string="Terima Perbaikan"
                                 type="object"
