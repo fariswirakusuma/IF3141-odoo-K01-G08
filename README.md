@@ -4,7 +4,7 @@ Template tugas besar IF3141: Odoo 17 + PostgreSQL 16 lewat Docker. Yang Anda bua
 
 ## Prasyarat
 
-- Docker (Docker Desktop di Windows/Mac) dan Git
+- Docker Engine + Docker Compose plugin (CLI) dan Git
 - Python 3.11 — opsional, hanya untuk lint/IDE (bukan untuk menjalankan Odoo)
 
 ## Quick Start
@@ -114,7 +114,7 @@ pylint --rcfile=.pylintrc custom_addons/starter_cats
 ## Troubleshooting
 
 - **Port 8069 terpakai**: ubah `ODOO_PORT` di `.env`, lalu `docker compose up -d`.
-- **Docker belum menyala**: jalankan Docker Desktop / daemon dulu.
+- **Docker belum menyala**: jalankan daemon Docker dulu (`sudo systemctl start docker`, atau `sudo service docker start`).
 - **`variable is missing a value`**: `.env` belum dibuat atau belum diisi.
 - **Skrip `.sh` error `Permission denied` atau `\r`**: jalankan `chmod +x scripts/*.sh`; pastikan file memakai LF (`.gitattributes` sudah mengaturnya, clone ulang bila perlu).
 - **Windows**: gunakan skrip `.cmd` dari Command Prompt, atau jalankan `.sh` di WSL.
