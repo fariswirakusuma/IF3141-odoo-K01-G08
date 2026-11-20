@@ -162,6 +162,14 @@
                         <button name="action_cancel" string="Batalkan PO"
                                 type="object"
                                 invisible="state in ['disahkan', 'dibatalkan']"/>
+                        <button name="action_request_change" string="Catat Perubahan Pesanan"
+                                type="object" groups="pilar_po.group_po_sales"
+                                invisible="state != 'disahkan'"
+                                confirm="PO akan ditarik dari daftar PO sah, dibuat versi baru, dan harus diperiksa serta disahkan ulang. Lanjutkan?"/>
+                        <button name="action_cancel" string="Batalkan PO Sah"
+                                type="object" groups="pilar_po.group_po_director"
+                                invisible="state != 'disahkan'"
+                                confirm="PO sah akan dibatalkan dan tim operasional, purchasing, keuangan, serta pengiriman akan diberi tahu. Lanjutkan?"/>
                         <field name="state" widget="statusbar"
                                statusbar_visible="bukti_diterima,dalam_pemeriksaan,dikembalikan,menunggu_keputusan,ditunda,disahkan"/>
                     </header>
@@ -252,6 +260,8 @@
                                         <field name="return_note" widget="text"/>
                                         <field name="postpone_reason" widget="text"/>
                                         <field name="cancel_reason" widget="text"/>
+                                        <field name="change_reason" widget="text"
+                                               invisible="state != 'disahkan'"/>
                                     </group>
                                     <group string="Hasil Pemeriksaan">
                                         <field name="validation_result"/>

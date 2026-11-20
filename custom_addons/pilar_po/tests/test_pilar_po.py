@@ -112,3 +112,62 @@ class TestPilarPo(TransactionCase):
     def test_sales_cannot_unlink_po(self):
         with self.assertRaises(AccessError):
             self.po.with_user(self.sales_user).unlink()
+
+    def _approve(self):
+        self._prepare_decision()
+        self.po.with_user(self.director_user).action_approve()
+        self.po.invalidate_recordset()
+        self.assertEqual(self.po.state, "disahkan")
+
+    def test_change_after_approval_creates_new_version(self):
+        self._approve()
+        original_version = self.po.current_version_id
+        self.po.change_reason = "Pelanggan menambah 5 kg beras."
+        self.po.with_user(self.sales_user).action_request_change()
+        self.po.invalidate_recordset()
+
+        self.assertEqual(self.po.state, "dalam_pemeriksaan")
+        self.assertEqual(
+            self.po.current_version_id.version_number,
+            original_version.version_number + 1,
+        )
+        self.assertTrue(original_version.exists())
+        self.assertIn(original_version, self.po.version_ids)
+        self.assertFalse(original_version.is_current)
+        self.assertEqual(len(self.po.current_version_id.item_ids), 1)
+        self.assertFalse(self.po.change_reason)
+        self.assertEqual(self.po.validation_result, "pending")
+        with self.assertRaises(UserError):
+            self.po.action_submit_decision()
+        self.assertTrue(self.po.audit_ids.filtered(
+            lambda log: log.action_type == "Perubahan pesanan pada PO sah"
+        ))
+
+    def test_change_requires_approved_state_and_reason(self):
+        self.po.change_reason = "Perubahan sebelum disahkan."
+        with self.assertRaises(UserError):
+            self.po.action_request_change()
+
+        self._approve()
+        self.po.change_reason = False
+        with self.assertRaises(UserError):
+            self.po.action_request_change()
+        self.assertEqual(self.po.state, "disahkan")
+
+    def test_director_can_cancel_approved_po(self):
+        self._approve()
+        self.po.cancel_reason = "Pelanggan membatalkan pesanan."
+        self.po.with_user(self.director_user).action_cancel()
+        self.po.invalidate_recordset()
+        self.assertEqual(self.po.state, "dibatalkan")
+        self.assertTrue(self.po.approval_ids.filtered(
+            lambda item: item.decision_type == "batal"
+        ))
+
+    def test_sales_cannot_cancel_approved_po(self):
+        self._approve()
+        self.po.cancel_reason = "Pelanggan membatalkan pesanan."
+        with self.assertRaises(UserError):
+            self.po.with_user(self.sales_user).action_cancel()
+        self.po.invalidate_recordset()
+        self.assertEqual(self.po.state, "disahkan")

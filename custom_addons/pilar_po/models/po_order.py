@@ -16,6 +16,12 @@ STATUS_SELECTION = [
 INSPECTION_STATES = ("bukti_diterima", "dalam_pemeriksaan", "dikembalikan")
 DECISION_STATES = ("menunggu_keputusan", "ditunda")
 FINAL_STATES = ("disahkan", "dibatalkan")
+DOWNSTREAM_GROUPS = (
+    "pilar_po.group_po_operations",
+    "pilar_po.group_po_purchasing",
+    "pilar_po.group_po_finance",
+    "pilar_po.group_po_driver",
+)
 
 
 class PilarPoOrder(models.Model):
@@ -133,6 +139,7 @@ class PilarPoOrder(models.Model):
     return_note = fields.Text(string="Catatan Perbaikan")
     postpone_reason = fields.Text(string="Alasan Penundaan")
     cancel_reason = fields.Text(string="Alasan Pembatalan")
+    change_reason = fields.Text(string="Alasan Perubahan Pesanan")
 
     evidence_preview = fields.Binary(
         string="Foto Bukti", compute="_compute_evidence_preview"
@@ -335,6 +342,49 @@ class PilarPoOrder(models.Model):
         self._log_audit(action, old_state, new_state, reason=reason,
                         duration_hours=duration, version=version)
 
+    def _is_director(self):
+        user = self.env.user
+        return bool(
+            self.env.su or user.has_group("base.group_system")
+            or user.has_group("pilar_po.group_po_director")
+        )
+
+    def _notify_downstream(self, body):
+        groups = self.env["res.groups"].sudo().browse([
+            self.env.ref(xmlid).id for xmlid in DOWNSTREAM_GROUPS
+        ])
+        partners = groups.mapped("users.partner_id")
+        for order in self:
+            order.message_post(
+                body=body,
+                partner_ids=partners.ids,
+                message_type="comment",
+                subtype_xmlid="mail.mt_comment",
+            )
+
+    def _create_next_version(self, note):
+        self.ensure_one()
+        current = self.current_version_id or self._ensure_current_version()
+        version = self.env["pilar.po.version"].create({
+            "po_id": self.id,
+            "created_by": self.env.user.id,
+            "version_number": current.version_number + 1,
+            "delivery_date": current.delivery_date,
+            "delivery_address": current.delivery_address,
+            "correction_note": note,
+            "is_current": True,
+        })
+        for item in current.item_ids:
+            self.env["pilar.po.item"].create({
+                "po_id": self.id,
+                "version_id": version.id,
+                "commodity_name": item.commodity_name,
+                "quantity": item.quantity,
+                "unit_name": item.unit_name,
+                "quality_specification": item.quality_specification,
+            })
+        return version
+
     def action_start_check(self):
         for order in self:
             if order.state != "bukti_diterima":
@@ -485,9 +535,8 @@ class PilarPoOrder(models.Model):
                 raise UserError(_("PO sudah dibatalkan."))
             if not order.cancel_reason:
                 raise UserError(_("Alasan pembatalan wajib diisi."))
-            if order.state == "disahkan" and not self.env.user.has_group(
-                "pilar_po.group_po_director"
-            ):
+            was_approved = order.state == "disahkan"
+            if was_approved and not order._is_director():
                 raise UserError(_(
                     "Pembatalan PO yang sudah disahkan hanya dapat dilakukan "
                     "Director of Operational."
@@ -499,31 +548,45 @@ class PilarPoOrder(models.Model):
                 "reason": order.cancel_reason,
             })
             order._set_state("dibatalkan", "PO dibatalkan", order.cancel_reason)
+            if was_approved:
+                order._notify_downstream(_(
+                    "PO sah %(name)s dibatalkan oleh Director of Operational. "
+                    "Hentikan proses operasional, tagihan, dan pengiriman. "
+                    "Alasan: %(reason)s",
+                    name=order.name, reason=order.cancel_reason,
+                ))
+        return True
+
+    def action_request_change(self):
+        for order in self:
+            if order.state != "disahkan":
+                raise UserError(_(
+                    "Perubahan pesanan hanya dapat dicatat pada PO yang sudah disahkan."
+                ))
+            if not order.change_reason:
+                raise UserError(_("Alasan perubahan pesanan wajib diisi."))
+            reason = order.change_reason
+            version = order._create_next_version(reason)
+            order.write({"change_reason": False})
+            order._set_state(
+                "dalam_pemeriksaan", "Perubahan pesanan pada PO sah",
+                f"Versi {version.version_number} dibuat karena perubahan pesanan: "
+                f"{reason}",
+                version=version,
+            )
+            order._notify_downstream(_(
+                "PO %(name)s ditarik dari daftar PO sah karena perubahan pesanan "
+                "(versi %(version)s) dan harus diperiksa serta disahkan ulang "
+                "sebelum diproses. Alasan: %(reason)s",
+                name=order.name, version=version.version_number, reason=reason,
+            ))
         return True
 
     def action_resubmit(self):
         for order in self:
             if order.state != "dikembalikan":
                 raise UserError(_("Hanya PO berstatus Dikembalikan yang dapat diperbaiki."))
-            current = order.current_version_id or order._ensure_current_version()
-            version = self.env["pilar.po.version"].create({
-                "po_id": order.id,
-                "created_by": self.env.user.id,
-                "version_number": current.version_number + 1,
-                "delivery_date": current.delivery_date,
-                "delivery_address": current.delivery_address,
-                "correction_note": order.return_note,
-                "is_current": True,
-            })
-            for item in current.item_ids:
-                self.env["pilar.po.item"].create({
-                    "po_id": order.id,
-                    "version_id": version.id,
-                    "commodity_name": item.commodity_name,
-                    "quantity": item.quantity,
-                    "unit_name": item.unit_name,
-                    "quality_specification": item.quality_specification,
-                })
+            version = order._create_next_version(order.return_note)
             order.write({"return_reason": False, "return_note": False})
             order._set_state(
                 "dalam_pemeriksaan", "Perbaikan PO diterima",
