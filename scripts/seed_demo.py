@@ -531,6 +531,8 @@ def main():
             vals["postpone_reason"] = spec["postpone_reason"]
         if spec["state"] == "dibatalkan":
             vals["cancel_reason"] = spec["cancel_reason"]
+            vals["cancelled_by"] = users["sales"]
+            vals["cancelled_at"] = dt(submitted + timedelta(hours=2))
         if spec.get("checker"):
             vals["checked_by"] = users[spec["checker"]]
             vals["checked_at"] = dt(submitted + timedelta(hours=1))

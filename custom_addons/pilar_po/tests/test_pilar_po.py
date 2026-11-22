@@ -163,6 +163,8 @@ class TestPilarPo(TransactionCase):
         self.assertTrue(self.po.approval_ids.filtered(
             lambda item: item.decision_type == "batal"
         ))
+        self.assertEqual(self.po.cancelled_by, self.director_user)
+        self.assertTrue(self.po.cancelled_at)
 
     def test_sales_cannot_cancel_approved_po(self):
         self._approve()

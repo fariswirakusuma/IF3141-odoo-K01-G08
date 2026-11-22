@@ -139,6 +139,10 @@ class PilarPoOrder(models.Model):
     return_note = fields.Text(string="Catatan Perbaikan")
     postpone_reason = fields.Text(string="Alasan Penundaan")
     cancel_reason = fields.Text(string="Alasan Pembatalan")
+    cancelled_by = fields.Many2one(
+        "res.users", string="Dibatalkan Oleh", readonly=True
+    )
+    cancelled_at = fields.Datetime(string="Waktu Pembatalan", readonly=True)
     change_reason = fields.Text(string="Alasan Perubahan Pesanan")
 
     evidence_preview = fields.Binary(
@@ -550,6 +554,10 @@ class PilarPoOrder(models.Model):
                 "user_id": self.env.user.id,
                 "decision_type": "batal",
                 "reason": order.cancel_reason,
+            })
+            order.write({
+                "cancelled_by": self.env.user.id,
+                "cancelled_at": fields.Datetime.now(),
             })
             order._set_state("dibatalkan", "PO dibatalkan", order.cancel_reason)
             if was_approved:
