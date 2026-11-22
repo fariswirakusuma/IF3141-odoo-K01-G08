@@ -488,7 +488,11 @@ class PilarPoOrder(models.Model):
                 "disahkan", "PO disahkan",
                 "PO sah menjadi dasar operasional, tagihan, dan pengiriman.",
             )
-            order.message_post(body=_("PO disahkan oleh Director of Operational."))
+            # kabari head of operational, purchasing, keuangan, dan pengemudi
+            order._notify_downstream(
+                _("PO %s disahkan oleh Director of Operational dan siap diproses.")
+                % order.name
+            )
         return True
 
     def action_postpone(self):
