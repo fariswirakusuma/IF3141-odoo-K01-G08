@@ -205,6 +205,8 @@ def ensure_user(odoo, login, name, group_xmlid, base_group):
         "password": "pilar123",
         "email": f"{login}@pilar.example.com",
         "groups_id": [(6, 0, groups)],
+        # notifikasi masuk ke inbox odoo, bukan email
+        "notification_type": "inbox",
     }
     if existing:
         odoo.write("res.users", existing, vals)
